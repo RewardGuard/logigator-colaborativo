@@ -1,0 +1,14 @@
+# Override local de desarrollo (no se sube: está en .gitignore local).
+# 1. Sirve además por http://localhost, para abrir el stack sin instalar la
+#    CA interna de Caddy en el almacén de confianza del sistema.
+# 2. Deja apagado editor-legacy, que este proyecto está retirando y que en una
+#    máquina de 8 GiB le quita ~750 MB al editor que sí usamos.
+services:
+  proxy:
+    volumes:
+      - ./Caddyfile.local:/etc/caddy/Caddyfile:ro
+    ports:
+      - 127.0.0.1:8080:80
+
+  editor-legacy:
+    profiles: ['legacy']

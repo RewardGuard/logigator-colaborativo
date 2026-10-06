@@ -1,0 +1,41 @@
+logigator.test {
+	tls internal
+
+	@editor path /editor /editor/*
+	handle @editor {
+		reverse_proxy editor:4200
+	}
+
+	@editorLegacy path /legacy-editor /legacy-editor/*
+	handle @editorLegacy {
+		reverse_proxy editor-legacy:8202
+	}
+
+	handle {
+		reverse_proxy backend:3000
+	}
+
+	log {
+		output stdout
+		level warn
+	}
+}
+
+# Bloque añadido solo para desarrollo local: mismo enrutado que logigator.test
+# pero por HTTP plano en localhost, para poder abrirlo sin instalar la CA
+# interna de Caddy en el almacén de confianza del sistema.
+http://localhost {
+	@editor path /editor /editor/*
+	handle @editor {
+		reverse_proxy editor:4200
+	}
+
+	@editorLegacy path /legacy-editor /legacy-editor/*
+	handle @editorLegacy {
+		reverse_proxy editor-legacy:8202
+	}
+
+	handle {
+		reverse_proxy backend:3000
+	}
+}
