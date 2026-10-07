@@ -61,6 +61,9 @@ services:
       - app_components:/app/resources/private/components
       - app_previews:/app/resources/public/preview
       - app_profiles:/app/resources/public/profile
+    environment:
+      # Solo la usa tools/seed-team.js al dar de alta las cuentas.
+      - LOGIGATOR_TEAM=${LOGIGATOR_TEAM:-}
 
   sync:
     build:
