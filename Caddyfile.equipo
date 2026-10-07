@@ -16,11 +16,15 @@
 #      todos los navegadores ya reconocen. Se dejan los dos archivos en
 #      `./certs/` y se descomenta el bloque `tls` de abajo.
 
-# El prefijo `http://` es necesario: sin el, Caddy activa HTTPS automatico y
-# redirige, y dentro de Tailscale no hace falta (WireGuard ya cifra). Para
-# activar HTTPS con certificados de Tailscale, quita los dos `http://` y
-# descomenta la linea `tls` de abajo.
-http://{$LOGIGATOR_HOST}, http://localhost {
+# `:80` a secas: acepta la peticion venga con el nombre que venga —localhost, la
+# IP de la red local, el nombre de Tailscale— y por HTTP plano, sin redirigir a
+# HTTPS. Es lo que conviene en un servidor privado: cambiar de red o de nombre no
+# obliga a tocar nada, y no hace falta enrutar por dominio porque aqui solo vive
+# esta aplicacion. Dentro de Tailscale, WireGuard ya cifra el trayecto.
+#
+# Para HTTPS con certificados de Tailscale, cambia `:80` por tu nombre
+# `.ts.net` y descomenta la linea `tls`.
+:80 {
 	# --- HTTPS con certificados de Tailscale ---------------------------------
 	# Descomenta estas dos lineas despues de generar los certificados.
 	# tls /certs/{$LOGIGATOR_HOST}.crt /certs/{$LOGIGATOR_HOST}.key

@@ -3,81 +3,49 @@
 Vamos a diseñar la CPU los cinco a la vez, en el mismo circuito, viendo lo que
 hace cada quien en tiempo real.
 
-**No tienes que instalar el programa.** Corre en la computadora de Giovan y tú
-entras por el navegador. Lo único que instalas es Tailscale, que es lo que
-conecta tu computadora con la suya.
+**No tienes que instalar nada.** El programa corre en la computadora de Giovan y
+tú entras por el navegador, como a cualquier página.
 
-Son 5 minutos. Sigue los pasos en orden.
-
----
-
-## Paso 1 — Acepta la invitación de Tailscale
-
-Giovan te va a mandar una invitación por correo. Ábrela y acéptala.
-
-Si te pide crear cuenta, puedes entrar con tu cuenta de Google, Microsoft o
-GitHub; no hace falta inventar contraseña nueva.
-
-> **¿Qué es Tailscale?** Una red privada entre nuestras computadoras. Es como si
-> las cinco estuvieran conectadas al mismo cable, aunque estemos en casas
-> distintas. Nadie de fuera puede entrar, y no abre tu computadora a internet.
+Son dos minutos.
 
 ---
 
-## Paso 2 — Instala Tailscale
+## Paso 1 — Conéctate a la misma WiFi que Giovan
 
-### Windows
+Mientras probamos, el servidor está en la computadora de Giovan y se llega por la
+red de casa/clase. **Tienes que estar en la misma WiFi que él.**
 
-1. Entra a **https://tailscale.com/download/windows**
-2. Descarga e instala (dale "Sí" cuando Windows pregunte).
-3. Al abrirse, pulsa **Log in** e inicia sesión con la cuenta del paso 1.
-4. Ya está: aparece un iconito en la barra de abajo, junto al reloj.
-
-### Mac
-
-1. Entra a **https://tailscale.com/download/mac**
-2. Descarga e instala.
-3. Ábrelo, pulsa **Log in** e inicia sesión con la cuenta del paso 1.
-4. macOS te va a pedir permiso para añadir una configuración de VPN: acéptala.
-   Te pedirá la contraseña de administrador de tu Mac.
-
-### Linux
-
-```bash
-curl -fsSL https://tailscale.com/install.sh | sh
-sudo tailscale up
-```
-
-Te sale un enlace en la terminal: ábrelo e inicia sesión con la cuenta del paso 1.
+Si vais a trabajar desde vuestras casas, hace falta Tailscale: está explicado más
+abajo, en [Para trabajar desde casa](#para-trabajar-desde-casa).
 
 ---
 
-## Paso 3 — Comprueba que estás conectado
+## Paso 2 — Abre la dirección
 
-Abre la aplicación de Tailscale. Tienes que ver en la lista la computadora de
-Giovan (el servidor). Si la ves, vas bien.
-
----
-
-## Paso 4 — Entra al editor
-
-Abre tu navegador (Chrome, Firefox o Edge — **Safari también sirve**) y escribe
-la dirección que te pasó Giovan. Se ve parecido a esto:
+En tu navegador (Chrome, Firefox, Edge o Safari) escribe:
 
 ```
-http://NOMBRE-DEL-SERVIDOR.NUESTRA-RED.ts.net
+http://192.168.4.22:9000
 ```
+
+> **No olvides el `:9000` del final.** Sin él no carga.
+
+Si no abre, lo más probable es que no estéis en la misma WiFi. Compruébalo con
+Giovan.
+
+---
+
+## Paso 3 — Inicia sesión
 
 Pulsa **Login** arriba a la derecha y entra con el usuario y la contraseña que te
 dio Giovan.
 
-> Si el navegador dice "No es seguro" en la barra de direcciones, **ignóralo**.
-> El tráfico ya va cifrado por Tailscale; ese aviso sale solo porque la dirección
-> es interna y no tiene certificado público.
+> Si el navegador dice "No es seguro", **ignóralo**: sale porque la dirección es
+> interna de la red y no tiene certificado público. No sale de vuestra WiFi.
 
 ---
 
-## Paso 5 — Ponte a trabajar con los demás
+## Paso 4 — Ponte a trabajar con los demás
 
 1. Arriba a la derecha hay un botón que dice **Colaborar**. **Pulsalo.**
 2. Cuando ponga **En vivo**, ya estás dentro de la sesión compartida.
@@ -122,10 +90,86 @@ navegador; lo que se comparte es el circuito, no la ejecución.
 
 | Qué ves | Qué hacer |
 |---|---|
-| El navegador no abre la página | Abre Tailscale y comprueba que ves la computadora de Giovan en la lista. Si no la ves, cierra sesión y vuelve a entrar en Tailscale. |
+| El navegador no abre la página | Comprueba que estás en la **misma WiFi** que Giovan y que escribiste el `:9000` del final. |
 | El botón dice **Sin conexión** | Recarga la página (Ctrl+R / Cmd+R) y vuelve a iniciar sesión. |
+| La computadora de Giovan se apagó o se durmió | No hay servidor: nadie puede entrar hasta que la encienda. |
 | No veo lo que hacen los demás | Comprueba que tu botón dice **En vivo** y que estáis en **el mismo proyecto**. Tiene que ser un proyecto guardado en el servidor, no uno nuevo sin guardar. |
-| "No es seguro" en la barra | Normal, ignóralo. Ver el paso 4. |
+| "No es seguro" en la barra | Normal, ignóralo. Ver el paso 3. |
 | El editor se ve raro o a medias | Haz una recarga forzada: Ctrl+Shift+R (Windows/Linux) o Cmd+Shift+R (Mac). |
 
 Si nada de eso lo arregla, dile a Giovan qué dice exactamente la pantalla.
+
+---
+
+# Para trabajar desde casa
+
+Lo de arriba solo funciona estando en la misma WiFi. Para entrar desde vuestras
+casas hace falta Tailscale, que conecta las computadoras entre sí aunque estén en
+sitios distintos. Giovan os avisará cuando esté listo.
+
+## Acepta la invitación de Tailscale
+
+Giovan te va a mandar una invitación por correo. Ábrela y acéptala.
+
+Si te pide crear cuenta, puedes entrar con tu cuenta de Google, Microsoft o
+GitHub; no hace falta inventar contraseña nueva.
+
+> **¿Qué es Tailscale?** Una red privada entre nuestras computadoras. Es como si
+> las cinco estuvieran conectadas al mismo cable, aunque estemos en casas
+> distintas. Nadie de fuera puede entrar, y no abre tu computadora a internet.
+
+---
+
+## Instala Tailscale
+
+### Windows
+
+1. Entra a **https://tailscale.com/download/windows**
+2. Descarga e instala (dale "Sí" cuando Windows pregunte).
+3. Al abrirse, pulsa **Log in** e inicia sesión con la cuenta del paso 1.
+4. Ya está: aparece un iconito en la barra de abajo, junto al reloj.
+
+### Mac
+
+1. Entra a **https://tailscale.com/download/mac**
+2. Descarga e instala.
+3. Ábrelo, pulsa **Log in** e inicia sesión con la cuenta del paso 1.
+4. macOS te va a pedir permiso para añadir una configuración de VPN: acéptala.
+   Te pedirá la contraseña de administrador de tu Mac.
+
+### Linux
+
+```bash
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up
+```
+
+Te sale un enlace en la terminal: ábrelo e inicia sesión con la cuenta del paso 1.
+
+---
+
+## Comprueba que estás conectado
+
+Abre la aplicación de Tailscale. Tienes que ver en la lista la computadora de
+Giovan (el servidor). Si la ves, vas bien.
+
+---
+
+## Entra al editor (con Tailscale)
+
+Abre tu navegador (Chrome, Firefox o Edge — **Safari también sirve**) y escribe
+la dirección que te pasó Giovan. Se ve parecido a esto:
+
+```
+http://NOMBRE-DEL-SERVIDOR.NUESTRA-RED.ts.net
+```
+
+Pulsa **Login** arriba a la derecha y entra con el usuario y la contraseña que te
+dio Giovan.
+
+> Si el navegador dice "No es seguro" en la barra de direcciones, **ignóralo**.
+> El tráfico ya va cifrado por Tailscale; ese aviso sale solo porque la dirección
+> es interna y no tiene certificado público.
+
+---
+
