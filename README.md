@@ -5,11 +5,48 @@
 [![CI logigator-backend](https://github.com/logigator/logigator/workflows/CI%20logigator-backend/badge.svg)](https://github.com/logigator/logigator/actions?query=workflow%3A%22CI+logigator-backend%22)
 [![CI logigator-editor](https://github.com/logigator/logigator/workflows/CI%20logigator-editor/badge.svg)](https://github.com/logigator/logigator/actions?query=workflow%3A%22CI+logigator-editor%22)
 
-> **Fork colaborativo.** Esta copia añade edición en tiempo real entre varias
-> personas (Yjs + un servidor de sincronización), presencia en el lienzo, login
-> restringido y despliegue privado por Tailscale.
-> **Si vas a instalarlo para tu equipo, la guía es [README-EQUIPO.md](README-EQUIPO.md)**
-> — este README es el del proyecto original y describe el desarrollo del editor.
+---
+
+## 🤝 Fork colaborativo — edición en tiempo real, varias personas a la vez
+
+Este fork convierte Logigator en algo parecido a un documento compartido: **varias
+personas editan el mismo circuito simultáneamente**, cada quien con su cursor y su
+color, en un servidor propio y privado.
+
+Se hizo para que un equipo de cinco pudiera diseñar una CPU junto, sin pasar por
+logigator.com. Si tienes el mismo problema, esto debería servirte tal cual.
+
+**Qué añade**
+
+- Sincronización en tiempo real del circuito completo (agregar, borrar, mover,
+  rotar, conectar, propiedades), **incluidos los componentes personalizados**
+- Presencia: lista de conectados, cursores con nombre sobre el lienzo, y resalte
+  de lo que cada quien tiene seleccionado
+- Panel de actividad en vivo
+- **Deshacer por usuario**: tu Ctrl+Z nunca toca el trabajo de otro
+- Tolerancia a cortes de red y a reinicios del servidor (CRDT + persistencia)
+- Login restringido a cuentas dadas de alta por quien administra; sin registro público
+- Despliegue con Docker Compose, pensado para una red privada de Tailscale
+
+**Cómo está hecho** — [Yjs](https://docs.yjs.dev) (CRDT) sobre
+[y-websocket](https://github.com/yjs/y-websocket), con persistencia en
+[y-leveldb](https://github.com/yjs/y-leveldb). Una sala por documento abierto. El
+detalle técnico, incluidas las tres carreras que costó encontrar, está en
+[`logigator-editor/docs/collab.md`](logigator-editor/docs/collab.md).
+
+**Guías**
+
+| | |
+|---|---|
+| [README-EQUIPO.md](README-EQUIPO.md) | Instalar y operar el servidor (español) |
+| [INSTRUCCIONES-COMPAÑEROS.md](INSTRUCCIONES-COMPAÑEROS.md) | Para repartir a quienes solo van a usarlo |
+| [logigator-editor/docs/collab.md](logigator-editor/docs/collab.md) | Cómo funciona por dentro |
+
+Fork de [logigator/logigator](https://github.com/logigator/logigator), bajo
+**AGPL-3.0** igual que el original, con sus avisos de copyright intactos. Lo de
+abajo es el README del proyecto original.
+
+---
 
 Logigator is a browser-based logic circuit editor and simulator. Users can place gates and wires on a canvas, wire them together, run a simulation, and save/share their projects. The editor renders entirely on a PixiJS canvas; the backend persists projects and components as JSON and exposes a REST API consumed by the SPA.
 
