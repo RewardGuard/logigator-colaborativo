@@ -12,7 +12,8 @@ Es un minuto.
 
 ## Paso 1 — Abre el enlace
 
-En tu navegador (Chrome, Firefox, Edge o Safari):
+En tu navegador (Chrome, Firefox, Edge o Safari), abre el enlace que te pasó
+quien administra el servidor. Tiene esta pinta:
 
 ```
 https://PEGA-AQUI-EL-ENLACE.trycloudflare.com
