@@ -30,6 +30,7 @@ import {
   SourceIndicatorState
 } from '../source-indicator/source-indicator.component';
 import { TranslateDirective } from '../../translation/translate.directive';
+import { PresenceBarComponent } from '../../collab/presence-bar/presence-bar.component';
 
 /** Longest project name accepted, matching the save dialog and open-project list. */
 const NAME_MAX_LENGTH = 20;
@@ -37,6 +38,7 @@ const NAME_MAX_LENGTH = 20;
 @Component({
   selector: 'app-title-bar',
   imports: [
+    PresenceBarComponent,
     LgMenubar,
     LgBadge,
     LgButton,

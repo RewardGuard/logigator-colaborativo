@@ -57,3 +57,6 @@ plans/
 
 # Container data
 data/*
+
+# Credenciales locales de desarrollo
+.env.dev
