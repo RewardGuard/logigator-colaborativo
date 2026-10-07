@@ -165,6 +165,12 @@ export class CollabService {
 		);
 
 		// --- documento -> local
+		// Yjs puede emitir varias actualizaciones seguidas por una sola accion
+		// ajena (pegar cien componentes, por ejemplo). Reconciliar en cada una
+		// seria recorrer el circuito entero otras tantas veces, asi que se juntan
+		// en un solo pase por fotograma, que ademas es el ritmo al que el editor
+		// repinta.
+		let pendiente = 0;
 		const onUpdate = (
 			_update: Uint8Array,
 			origin: unknown,
@@ -172,7 +178,11 @@ export class CollabService {
 			_tr: Y.Transaction
 		) => {
 			if (origin === LOCAL_ORIGIN) return; // es nuestro, ya esta aplicado
-			this._applyRemote(session);
+			if (pendiente) return;
+			pendiente = requestAnimationFrame(() => {
+				pendiente = 0;
+				this._applyRemote(session);
+			});
 		};
 		doc.on('update', onUpdate);
 
@@ -209,6 +219,7 @@ export class CollabService {
 		provider.on('sync', onSync);
 
 		session.dispose = () => {
+			if (pendiente) cancelAnimationFrame(pendiente);
 			actionSub.unsubscribe();
 			selectionSub.unsubscribe();
 			doc.off('update', onUpdate);

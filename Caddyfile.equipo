@@ -1,0 +1,41 @@
+# Caddy para el despliegue del equipo.
+#
+# `{$LOGIGATOR_HOST}` sale del `.env`: es el nombre por el que tus companeros
+# llegan al servidor, normalmente el nombre de Tailscale de la maquina
+# (`algo.tu-tailnet.ts.net`).
+#
+# Sobre el cifrado: dentro de una red de Tailscale **el trafico ya va cifrado**
+# por WireGuard entre maquina y maquina, asi que HTTP simple sobre el tailnet no
+# viaja en claro por ninguna red ajena. Aun asi, con HTTPS el navegador no
+# ensena avisos y quedan habilitadas las APIs que solo funcionan en contexto
+# seguro. Hay dos modos, y los explica README-EQUIPO.md:
+#
+#   1. HTTP (por defecto): no hay que hacer nada mas.
+#   2. HTTPS con certificados de Tailscale: `tailscale cert` genera un
+#      certificado de Let's Encrypt de verdad para tu nombre `.ts.net`, que
+#      todos los navegadores ya reconocen. Se dejan los dos archivos en
+#      `./certs/` y se descomenta el bloque `tls` de abajo.
+
+{$LOGIGATOR_HOST}, localhost {
+	# --- HTTPS con certificados de Tailscale ---------------------------------
+	# Descomenta estas dos lineas despues de generar los certificados.
+	# tls /certs/{$LOGIGATOR_HOST}.crt /certs/{$LOGIGATOR_HOST}.key
+
+	# Servidor de sincronizacion en tiempo real (WebSocket). Va antes que el
+	# resto porque Caddy aplica la primera ruta que encaja.
+	@sync path /sync /sync/*
+	handle @sync {
+		reverse_proxy sync:4444
+	}
+
+	# La imagen de produccion sirve el backend y los dos editores desde un solo
+	# proceso, asi que todo lo demas va al mismo sitio.
+	handle {
+		reverse_proxy app:3000
+	}
+
+	log {
+		output stdout
+		level warn
+	}
+}

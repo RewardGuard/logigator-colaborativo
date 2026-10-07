@@ -1,0 +1,119 @@
+# Despliegue del equipo: Logigator colaborativo, autohospedado y privado.
+#
+#   docker compose -f docker-compose.equipo.yaml up -d --build
+#
+# Todo lo configurable sale del archivo `.env` que esta junto a este (copialo de
+# `.env.example`). Las instrucciones completas estan en README-EQUIPO.md.
+#
+# Diferencias con `docker-compose.production.yaml`, que es el del proyecto
+# original y sirve para probar la imagen en local:
+#
+#   - anade el servicio `sync`, que es el que permite editar entre varios;
+#   - escucha en la direccion que digas en LOGIGATOR_BIND en vez de solo en
+#     127.0.0.1, porque si no tus companeros no llegarian por Tailscale;
+#   - las contrasenas de la base de datos salen del `.env`, no van escritas aqui;
+#   - los datos (base, circuitos y documentos de Yjs) viven en volumenes con
+#     nombre, para que sobrevivan a `docker compose down`.
+
+services:
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    networks:
+      - net
+    volumes:
+      - ./Caddyfile.equipo:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      # Certificados de Tailscale, cuando se usan (ver README-EQUIPO.md).
+      # Si la carpeta no existe, Caddy sigue funcionando por HTTP.
+      - ./certs:/certs:ro
+    environment:
+      - LOGIGATOR_HOST=${LOGIGATOR_HOST:-localhost}
+    ports:
+      - '${LOGIGATOR_BIND:-127.0.0.1}:${LOGIGATOR_HTTP_PORT:-80}:80'
+      - '${LOGIGATOR_BIND:-127.0.0.1}:${LOGIGATOR_HTTPS_PORT:-443}:443'
+    depends_on:
+      - app
+      - sync
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - net
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - ./logigator-backend/config:/app/config
+      # Los circuitos NO se guardan en la base: van a disco como archivos JSON
+      # (entidades ProjectFile/ComponentFile, que heredan de PersistedResource).
+      # Sin volumen se perderian al recrear el contenedor.
+      #
+      # Se montan las cuatro carpetas de datos una por una, y no el
+      # `resources/private` que las contiene: ahi dentro estan tambien las
+      # plantillas Handlebars del servidor, y un volumen sobre la carpeta padre
+      # las taparia y dejaria la aplicacion sin ninguna pagina.
+      - app_projects:/app/resources/private/projects
+      - app_components:/app/resources/private/components
+      - app_previews:/app/resources/public/preview
+      - app_profiles:/app/resources/public/profile
+
+  sync:
+    build:
+      context: ./logigator-sync
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - net
+    depends_on:
+      - app
+    volumes:
+      - sync_data:/data
+    environment:
+      - SYNC_PORT=4444
+      - SYNC_PERSISTENCE_DIR=/data/yjs
+      - SYNC_BACKEND_URL=http://app:3000
+      - SYNC_REQUIRE_AUTH=${SYNC_REQUIRE_AUTH:-true}
+
+  mysql:
+    image: mysql:8.3
+    restart: unless-stopped
+    networks:
+      - net
+    cap_add:
+      - SYS_NICE
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?define MYSQL_ROOT_PASSWORD en .env}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-logigator}
+      - MYSQL_USER=${MYSQL_USER:-logigator}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:?define MYSQL_PASSWORD en .env}
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    networks:
+      - net
+    volumes:
+      - redis_data:/data
+
+volumes:
+  caddy_data:
+  caddy_config:
+  mysql_data:
+  redis_data:
+  sync_data:
+  app_projects:
+  app_components:
+  app_previews:
+  app_profiles:
+
+networks:
+  net:
+    driver: bridge

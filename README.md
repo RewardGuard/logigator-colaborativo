@@ -5,6 +5,12 @@
 [![CI logigator-backend](https://github.com/logigator/logigator/workflows/CI%20logigator-backend/badge.svg)](https://github.com/logigator/logigator/actions?query=workflow%3A%22CI+logigator-backend%22)
 [![CI logigator-editor](https://github.com/logigator/logigator/workflows/CI%20logigator-editor/badge.svg)](https://github.com/logigator/logigator/actions?query=workflow%3A%22CI+logigator-editor%22)
 
+> **Fork colaborativo.** Esta copia añade edición en tiempo real entre varias
+> personas (Yjs + un servidor de sincronización), presencia en el lienzo, login
+> restringido y despliegue privado por Tailscale.
+> **Si vas a instalarlo para tu equipo, la guía es [README-EQUIPO.md](README-EQUIPO.md)**
+> — este README es el del proyecto original y describe el desarrollo del editor.
+
 Logigator is a browser-based logic circuit editor and simulator. Users can place gates and wires on a canvas, wire them together, run a simulation, and save/share their projects. The editor renders entirely on a PixiJS canvas; the backend persists projects and components as JSON and exposes a REST API consumed by the SPA.
 
 ---
