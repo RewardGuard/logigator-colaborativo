@@ -31,6 +31,11 @@ export class GlobalViewDataMiddleware implements ExpressMiddlewareInterface {
 		// layout's og:url tag so shares of all language variants consolidate.
 		response.locals.canonicalUrl = `${domain}${url}`;
 
+		// Las plantillas esconden "Sign up" cuando esta cerrado. Es cosmetico:
+		// quien de verdad corta el alta es AuthController.
+		response.locals.registrationOpen =
+			this.configService.getConfig('environment').allowPublicRegistration === true;
+
 		response.locals.formErrors = request.session.formErrors;
 		request.session.formErrors = undefined;
 

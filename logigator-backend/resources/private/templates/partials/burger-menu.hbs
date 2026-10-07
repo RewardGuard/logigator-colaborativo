@@ -53,10 +53,12 @@
 				{{> icon icon='login' alt='Login' class='partial-burger-menu__entry-icon' }}
 				<p>{{i18n.SITE_HEADER.LOGIN}}</p>
 			</div>
+{{#if registrationOpen}}
 			<div class="partial-burger-menu__entry partial-burger-menu__register">
 				{{> icon icon='pencil-alt' alt='Register' class='partial-burger-menu__entry-icon' }}
 				<p>{{i18n.SITE_HEADER.REGISTER}}</p>
 			</div>
+{{/if}}
 		{{/if}}
 	</div>
 </div>

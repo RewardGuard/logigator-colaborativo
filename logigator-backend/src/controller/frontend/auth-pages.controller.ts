@@ -1,9 +1,12 @@
-import {Controller, Get, QueryParam, Render, UseBefore} from 'routing-controllers';
+import {Controller, Get, NotFoundError, QueryParam, Render, UseBefore} from 'routing-controllers';
+import {ConfigService} from '../../services/config.service';
 import {CheckNotAuthenticatedFrontMiddleware} from '../../middleware/auth/frontend-guards/check-not-authenticated-front.middleware';
 import {setTitleMiddleware} from '../../middleware/action/set-title-middleware';
 
 @Controller()
 export class AuthPagesController {
+
+	constructor(private configService: ConfigService) {}
 
 	@Get('/login')
 	@Render('login-page')
@@ -15,6 +18,10 @@ export class AuthPagesController {
 	@Render('register-page')
 	@UseBefore(CheckNotAuthenticatedFrontMiddleware, setTitleMiddleware('TITLE.REGISTER'))
 	public register() {
+		// Instalacion privada: sin registro publico la pagina no existe.
+		if (this.configService.getConfig('environment').allowPublicRegistration !== true) {
+			throw new NotFoundError();
+		}
 	}
 
 	@Get('/reset-password')

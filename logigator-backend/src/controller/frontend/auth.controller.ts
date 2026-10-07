@@ -18,11 +18,21 @@ import {UserPreferences} from '../../models/user-preferences';
 import {updateAuthenticatedCookie} from '../../functions/update-authenticated-cookie';
 import {SendPasswordResetMail} from '../../models/request/frontend/auth/send-password-reset-mail';
 import {ResetPassword} from '../../models/request/frontend/auth/reset-password';
+import {ConfigService} from '../../services/config.service';
 
 @Controller('/auth')
 export class AuthController {
 
-	constructor(private userService: UserService) {}
+	constructor(private userService: UserService, private configService: ConfigService) {}
+
+	/**
+	 * Esta instalacion es privada: las cuentas las da de alta quien administra el
+	 * servidor con `tools/seed-team.js`, no se registra nadie por su cuenta.
+	 * Se controla con `allowPublicRegistration` en `config/environment.json`.
+	 */
+	private get registrationOpen(): boolean {
+		return this.configService.getConfig('environment').allowPublicRegistration === true;
+	}
 
 	@Post('/local-register')
 	@UseBefore(CheckNotAuthenticatedFrontMiddleware)
@@ -39,6 +49,12 @@ export class AuthController {
 	}
 
 	private async localRegisterShared(body: LocalRegister, preferences: UserPreferences, redirect: RedirectFunction): Promise<Response> {
+		// La comprobacion va aqui, en el unico camino por el que se crea una
+		// cuenta, y no solo en la pagina: ocultar el formulario no impide mandar
+		// el POST a mano.
+		if (!this.registrationOpen) {
+			throw new FormDataError(body, undefined, 'unknown');
+		}
 		try {
 			if (await this.userService.createLocalUser(body.username, body.email, body.password, preferences.lang)) {
 				return redirect({ showInfoPopup: 'local-register'});

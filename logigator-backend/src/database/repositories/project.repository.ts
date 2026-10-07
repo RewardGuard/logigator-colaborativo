@@ -5,16 +5,27 @@ import {Page, PageableRepository} from './pageable.repository';
 import {User} from '../entities/user.entity';
 import {NotFoundError} from 'routing-controllers';
 import {ProjectFile} from '../entities/project-file.entity';
+import {isTeamWorkspace} from '../../functions/team-workspace';
 
 @Service()
 @EntityRepository(Project)
 export class ProjectRepository extends PageableRepository<Project> {
 
+	/**
+	 * Devuelve el proyecto, comprobando que quien lo pide puede verlo.
+	 *
+	 * En modo equipo (`teamWorkspace` en `config/environment.json`) la propiedad
+	 * deja de filtrar: esta instalacion es privada y las unicas cuentas que
+	 * existen son las que dio de alta quien administra el servidor, asi que los
+	 * cinco son companeros de equipo y comparten todos los proyectos. Fuera de
+	 * ese modo se mantiene el comportamiento original: cada quien solo ve lo
+	 * suyo.
+	 */
 	public async getOwnedProjectOrThrow(projectId: string, user: User, message = 'ResourceNotFound'): Promise<Project> {
 		const project = await this.findOne({
 			where: {
 				id: projectId,
-				user: user
+				...(isTeamWorkspace() ? {} : {user: user})
 			}
 		});
 		if (!project)
@@ -34,7 +45,10 @@ export class ProjectRepository extends PageableRepository<Project> {
 	public getProjectPageForUser(pageNr: number, pageSize: number, user: User, search?: string, onlyShowPublic = false): Promise<Page<Project>> {
 		return this.getPage(pageNr, pageSize, {
 			where: {
-				user: user,
+				// En modo equipo la lista muestra los proyectos de los cinco, no
+				// solo los propios: es lo que hace que "abrir el proyecto de Ana"
+				// sea posible sin inventar un sistema de permisos.
+				...(isTeamWorkspace() ? {} : {user: user}),
 				...(search && {name: Like('%' + search + '%')}),
 				...(onlyShowPublic && {public: true})
 			},

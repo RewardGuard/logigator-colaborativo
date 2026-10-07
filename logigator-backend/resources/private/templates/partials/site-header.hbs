@@ -31,7 +31,9 @@
 		{{else}}
 			<div class="partial-site-header__right-user">
 				<button class="btn-outline secondary partial-site-header__btn-login">{{i18n.SITE_HEADER.LOGIN}}</button>
+{{#if registrationOpen}}
 				<button class="btn-outline secondary partial-site-header__btn-register">{{i18n.SITE_HEADER.REGISTER}}</button>
+{{/if}}
 				<div class="partial-site-header__more partial-site-header__dropdown-trigger"></div>
 			</div>
 		{{/if}}

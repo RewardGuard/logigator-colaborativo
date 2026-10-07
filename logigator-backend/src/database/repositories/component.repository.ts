@@ -5,6 +5,7 @@ import {Page, PageableRepository} from './pageable.repository';
 import {User} from '../entities/user.entity';
 import {NotFoundError} from 'routing-controllers';
 import {ComponentFile} from '../entities/component-file.entity';
+import {isTeamWorkspace} from '../../functions/team-workspace';
 
 @Service()
 @EntityRepository(Component)
@@ -14,7 +15,7 @@ export class ComponentRepository extends PageableRepository<Component> {
 		const component = await this.findOne({
 			where: {
 				id: componentId,
-				user: user
+				...(isTeamWorkspace() ? {} : {user: user})
 			}
 		});
 		if (!component)
@@ -51,7 +52,7 @@ export class ComponentRepository extends PageableRepository<Component> {
 	public getComponentPageForUser(pageNr: number, pageSize: number, user: User, search?: string, onlyShowPublic = false): Promise<Page<Component>> {
 		return this.getPage(pageNr, pageSize, {
 			where: {
-				user: user,
+				...(isTeamWorkspace() ? {} : {user: user}),
 				...(search && {name: Like('%' + search + '%')}),
 				...(onlyShowPublic && {public: true})
 			},

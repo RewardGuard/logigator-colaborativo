@@ -70,7 +70,9 @@ export class SaveProjectDialogComponent extends LgDialogContent<
   protected readonly destination = signal<'server' | 'local'>(
     this.userService.user() ? 'server' : 'local'
   );
-  protected readonly isPublic = signal(true);
+  // Privado por defecto: esta es una instalacion autohospedada de un equipo,
+  // no logigator.com. Publicar es una decision explicita, no un descuido.
+  protected readonly isPublic = signal(false);
   protected readonly nameMaxLength = NAME_MAX_LENGTH;
 
   protected get canSave(): boolean {
