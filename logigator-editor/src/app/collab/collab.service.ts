@@ -80,6 +80,17 @@ interface Session {
 	bridges: Bridges;
 	/** Lo ultimo que publicamos: la base de la siguiente comparacion. */
 	published: ReturnType<typeof emptySnapshot>;
+	/**
+	 * Falso hasta que termina la primera sincronizacion con el servidor.
+	 *
+	 * Mientras tanto no se publica NADA. Sin esta guarda, un cambio local que
+	 * ocurra entre la conexion y la primera sincronizacion compara el circuito
+	 * entero contra una base vacia y lo publica completo, encima de un documento
+	 * que ya lo contenia: el circuito aparece dos veces, y con el acuerdo de
+	 * todos los participantes, porque el CRDT hace bien su trabajo sobre datos
+	 * que ya llegaron mal.
+	 */
+	ready: boolean;
 	dispose: () => void;
 }
 
@@ -144,6 +155,7 @@ export class CollabService {
 			provider,
 			bridges,
 			published: emptySnapshot(),
+			ready: false,
 			dispose: () => undefined
 		};
 
@@ -164,7 +176,16 @@ export class CollabService {
 		};
 		doc.on('update', onUpdate);
 
-		// --- presencia
+		// --- presencia: mi seleccion, publicada cuando cambia
+		// Se suscribe aqui y no en la capa visual porque aqui tenemos el
+		// `Project` correcto: el componente del lienzo se crea una sola vez y
+		// sobrevive al cambio de proyecto, asi que suscribirse alli ataria la
+		// escucha al proyecto que hubiera en ese instante.
+		const selectionSub =
+			project.selectionManager.selectionChange$.subscribe(() =>
+				this.publishSelection(project)
+			);
+
 		const awareness = provider.awareness;
 		awareness.setLocalState({ name: me, color } satisfies PresenceState);
 		const onAwareness = () => this._refreshPeers(session);
@@ -189,6 +210,7 @@ export class CollabService {
 
 		session.dispose = () => {
 			actionSub.unsubscribe();
+			selectionSub.unsubscribe();
 			doc.off('update', onUpdate);
 			awareness.off('change', onAwareness);
 			provider.off('status', onStatus);
@@ -222,6 +244,55 @@ export class CollabService {
 	/** Sale de todas las salas. */
 	public disconnectAll(): void {
 		for (const project of [...this._sessions.keys()]) this.disconnect(project);
+	}
+
+	/**
+	 * Publica donde tengo el cursor, en coordenadas de rejilla.
+	 *
+	 * Va por el awareness, no por el documento: es informacion de un instante,
+	 * no debe guardarse en disco ni entrar en el historial, y desaparece sola
+	 * cuando alguien cierra la pestana. `undefined` lo retira (el puntero salio
+	 * del lienzo).
+	 */
+	public publishCursor(
+		project: Project,
+		cursor: { x: number; y: number } | undefined
+	): void {
+		const session = this._sessions.get(project);
+		if (!session) return;
+		const awareness = session.provider.awareness;
+		const state = (awareness.getLocalState() ?? {}) as PresenceState;
+		awareness.setLocalState({
+			...state,
+			cursor: cursor
+				? // Media rejilla basta para que se vea donde apunta; mas
+					// precision solo genera trafico.
+					{
+						x: Math.round(cursor.x * 2) / 2,
+						y: Math.round(cursor.y * 2) / 2
+					}
+				: undefined
+		});
+	}
+
+	/** Publica que tengo seleccionado, en ids globales. */
+	public publishSelection(project: Project): void {
+		const session = this._sessions.get(project);
+		if (!session) return;
+
+		const selection: string[] = [];
+		for (const component of project.selectionManager.selectedComponents) {
+			const gid = session.bridges.components.gidOf(component.id);
+			if (gid) selection.push(gid);
+		}
+		for (const wire of project.selectionManager.selectedWires) {
+			const gid = session.bridges.wires.gidOf(wire.id);
+			if (gid) selection.push(gid);
+		}
+
+		const awareness = session.provider.awareness;
+		const state = (awareness.getLocalState() ?? {}) as PresenceState;
+		awareness.setLocalState({ ...state, selection });
 	}
 
 	/** La sesion de un proyecto, para la capa de presencia. */
@@ -262,6 +333,7 @@ export class CollabService {
 			session.doc.transact(() => {
 				meta.set('seededBy', session.doc.clientID);
 			}, LOCAL_ORIGIN);
+			session.ready = true;
 			this._publishLocal(session);
 			this.logging.debug(
 				`sala ${session.room} vacia: sembrada con el circuito local`,
@@ -301,6 +373,7 @@ export class CollabService {
 		session.bridges.wires.clear();
 		session.project.actionManager.clear();
 		session.published = emptySnapshot();
+		session.ready = true;
 
 		this._applyRemote(session);
 
@@ -313,6 +386,7 @@ export class CollabService {
 
 	/** Publica al documento lo que haya cambiado en el editor. */
 	private _publishLocal(session: Session): void {
+		if (!session.ready) return;
 		const current = readProject(session.project);
 		const diff = diffSnapshots(session.published, current);
 		if (isEmptyDiff(diff)) return;

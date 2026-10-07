@@ -30,9 +30,12 @@ import {
 } from '../../rendering/renderer.service';
 import { BoardSurfaceService } from '../../rendering/board-surface.service';
 
+import { CollabOverlayComponent } from '../../collab/collab-overlay/collab-overlay.component';
+import { ActivityPanelComponent } from '../../collab/activity-panel/activity-panel.component';
+
 @Component({
   selector: 'app-board',
-  imports: [FpsCounterComponent],
+  imports: [FpsCounterComponent, CollabOverlayComponent, ActivityPanelComponent],
   templateUrl: './board.component.html',
   host: { class: 'relative' }
 })
