@@ -6,46 +6,35 @@ hace cada quien en tiempo real.
 **No tienes que instalar nada.** El programa corre en la computadora de Giovan y
 tú entras por el navegador, como a cualquier página.
 
-Son dos minutos.
+Es un minuto.
 
 ---
 
-## Paso 1 — Conéctate a la misma WiFi que Giovan
+## Paso 1 — Abre el enlace
 
-Mientras probamos, el servidor está en la computadora de Giovan y se llega por la
-red de casa/clase. **Tienes que estar en la misma WiFi que él.**
-
-Si vais a trabajar desde vuestras casas, hace falta Tailscale: está explicado más
-abajo, en [Para trabajar desde casa](#para-trabajar-desde-casa).
-
----
-
-## Paso 2 — Abre la dirección
-
-En tu navegador (Chrome, Firefox, Edge o Safari) escribe:
+En tu navegador (Chrome, Firefox, Edge o Safari):
 
 ```
-http://192.168.4.22:9000
+https://PEGA-AQUI-EL-ENLACE.trycloudflare.com
 ```
 
-> **No olvides el `:9000` del final.** Sin él no carga.
+Funciona desde donde sea: tu casa, datos móviles, la escuela. No hace falta estar
+en la misma red que Giovan ni instalar nada.
 
-Si no abre, lo más probable es que no estéis en la misma WiFi. Compruébalo con
-Giovan.
+> **El enlace caduca.** Mientras probamos usamos una dirección temporal: si
+> Giovan apaga el servidor o reinicia su computadora, cambia y te pasará una
+> nueva. Más adelante tendremos una fija.
 
 ---
 
-## Paso 3 — Inicia sesión
+## Paso 2 — Inicia sesión
 
 Pulsa **Login** arriba a la derecha y entra con el usuario y la contraseña que te
 dio Giovan.
 
-> Si el navegador dice "No es seguro", **ignóralo**: sale porque la dirección es
-> interna de la red y no tiene certificado público. No sale de vuestra WiFi.
-
 ---
 
-## Paso 4 — Ponte a trabajar con los demás
+## Paso 3 — Ponte a trabajar con los demás
 
 1. Arriba a la derecha hay un botón que dice **Colaborar**. **Pulsalo.**
 2. Cuando ponga **En vivo**, ya estás dentro de la sesión compartida.
@@ -90,11 +79,11 @@ navegador; lo que se comparte es el circuito, no la ejecución.
 
 | Qué ves | Qué hacer |
 |---|---|
-| El navegador no abre la página | Comprueba que estás en la **misma WiFi** que Giovan y que escribiste el `:9000` del final. |
+| El navegador no abre la página | El enlace caduca al reiniciar el servidor. Pídele a Giovan el actual. |
 | El botón dice **Sin conexión** | Recarga la página (Ctrl+R / Cmd+R) y vuelve a iniciar sesión. |
 | La computadora de Giovan se apagó o se durmió | No hay servidor: nadie puede entrar hasta que la encienda. |
 | No veo lo que hacen los demás | Comprueba que tu botón dice **En vivo** y que estáis en **el mismo proyecto**. Tiene que ser un proyecto guardado en el servidor, no uno nuevo sin guardar. |
-| "No es seguro" en la barra | Normal, ignóralo. Ver el paso 3. |
+
 | El editor se ve raro o a medias | Haz una recarga forzada: Ctrl+Shift+R (Windows/Linux) o Cmd+Shift+R (Mac). |
 
 Si nada de eso lo arregla, dile a Giovan qué dice exactamente la pantalla.

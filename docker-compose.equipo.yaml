@@ -82,6 +82,24 @@ services:
       - SYNC_BACKEND_URL=http://app:3000
       - SYNC_REQUIRE_AUTH=${SYNC_REQUIRE_AUTH:-true}
 
+  # Tunel publico temporal, para que el equipo entre desde fuera de la red local
+  # mientras no hay Tailscale. No arranca solo: hay que pedirlo con
+  #   docker compose -f docker-compose.equipo.yaml --profile tunel up -d
+  # La direccion sale en sus registros y CAMBIA cada vez que arranca.
+  #
+  # Expone la aplicacion a internet: cualquiera con el enlace ve la pagina de
+  # inicio de sesion. Entrar no puede (hacen falta credenciales y el registro
+  # esta cerrado), pero apagalo cuando no lo necesites.
+  tunel:
+    image: cloudflare/cloudflared:latest
+    profiles: ['tunel']
+    restart: unless-stopped
+    networks:
+      - net
+    depends_on:
+      - proxy
+    command: tunnel --no-autoupdate --url http://proxy:80
+
   mysql:
     image: mysql:8.3
     restart: unless-stopped
