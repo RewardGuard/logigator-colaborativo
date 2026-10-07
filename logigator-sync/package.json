@@ -1,0 +1,23 @@
+{
+  "name": "logigator-sync",
+  "version": "1.0.0",
+  "description": "Servidor de sincronizacion en tiempo real (Yjs) para Logigator colaborativo",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "type": "module",
+  "packageManager": "yarn@4.14.1",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test --test-force-exit --test-timeout=20000 test/sync.test.js"
+  },
+  "dependencies": {
+    "lib0": "^0.2.119",
+    "ws": "^8.18.0",
+    "y-leveldb": "^0.2.0",
+    "y-protocols": "^1.0.7",
+    "yjs": "^13.6.33"
+  },
+  "devDependencies": {
+    "y-websocket": "^3.1.0"
+  }
+}

@@ -1,6 +1,11 @@
 logigator.test {
 	tls internal
 
+	@sync path /sync /sync/*
+	handle @sync {
+		reverse_proxy sync:4444
+	}
+
 	@editor path /editor /editor/*
 	handle @editor {
 		reverse_proxy editor:4200

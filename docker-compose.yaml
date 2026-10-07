@@ -46,6 +46,22 @@ services:
     working_dir: /app
     command: "sh -c 'corepack enable && yarn && exec yarn start'"
 
+  sync:
+    image: node:24
+    networks:
+      - net
+    depends_on:
+      - backend
+    volumes:
+      - ./logigator-sync/:/app
+      - sync_data:/data
+    working_dir: /app
+    command: "sh -c 'corepack enable && yarn && exec yarn start'"
+    environment:
+      - SYNC_PORT=4444
+      - SYNC_PERSISTENCE_DIR=/data/yjs
+      - SYNC_BACKEND_URL=http://backend:3000
+
   mysql:
     image: mysql:8.3
     networks:
@@ -70,6 +86,7 @@ services:
 
 volumes:
   caddy_data:
+  sync_data:
 
 networks:
   net:

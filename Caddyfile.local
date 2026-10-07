@@ -1,6 +1,11 @@
 logigator.test {
 	tls internal
 
+	@sync path /sync /sync/*
+	handle @sync {
+		reverse_proxy sync:4444
+	}
+
 	@editor path /editor /editor/*
 	handle @editor {
 		reverse_proxy editor:4200
@@ -25,6 +30,11 @@ logigator.test {
 # pero por HTTP plano en localhost, para poder abrirlo sin instalar la CA
 # interna de Caddy en el almacén de confianza del sistema.
 http://localhost {
+	@sync path /sync /sync/*
+	handle @sync {
+		reverse_proxy sync:4444
+	}
+
 	@editor path /editor /editor/*
 	handle @editor {
 		reverse_proxy editor:4200
