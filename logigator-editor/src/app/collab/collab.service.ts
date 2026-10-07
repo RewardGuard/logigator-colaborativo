@@ -271,11 +271,12 @@ export class CollabService {
 	): void {
 		const session = this._sessions.get(project);
 		if (!session) return;
-		const awareness = session.provider.awareness;
-		const state = (awareness.getLocalState() ?? {}) as PresenceState;
-		awareness.setLocalState({
-			...state,
-			cursor: cursor
+		// `setLocalStateField` y no `setLocalState`: escribir el estado entero
+		// desde una copia leida antes pisaria lo que la otra publicacion
+		// (la seleccion) hubiera escrito mientras tanto.
+		session.provider.awareness.setLocalStateField(
+			'cursor',
+			cursor
 				? // Media rejilla basta para que se vea donde apunta; mas
 					// precision solo genera trafico.
 					{
@@ -283,7 +284,7 @@ export class CollabService {
 						y: Math.round(cursor.y * 2) / 2
 					}
 				: undefined
-		});
+		);
 	}
 
 	/** Publica que tengo seleccionado, en ids globales. */
@@ -301,9 +302,7 @@ export class CollabService {
 			if (gid) selection.push(gid);
 		}
 
-		const awareness = session.provider.awareness;
-		const state = (awareness.getLocalState() ?? {}) as PresenceState;
-		awareness.setLocalState({ ...state, selection });
+		session.provider.awareness.setLocalStateField('selection', selection);
 	}
 
 	/** La sesion de un proyecto, para la capa de presencia. */

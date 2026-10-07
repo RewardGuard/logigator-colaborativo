@@ -83,3 +83,14 @@
 # dependencies
 /logigator-editor-legacy/src/assets/wasm/*
 !/logigator-editor-legacy/src/assets/wasm/.gitkeep
+
+# Datos locales de desarrollo: el compose de desarrollo monta ./data/db para
+# MySQL. Son cientos de megas de archivos de base de datos que no pintan nada en
+# la imagen, y hacian que transferir el contexto de build tardara una eternidad.
+/data
+
+# Certificados de Tailscale del despliegue (ver README-EQUIPO.md)
+/certs
+
+# Historial de git: la imagen no lo necesita
+/.git

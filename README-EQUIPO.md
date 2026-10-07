@@ -126,8 +126,13 @@ docker compose -f docker-compose.equipo.yaml logs -f
 ### 5. Preparar la base de datos
 
 ```bash
-docker compose -f docker-compose.equipo.yaml exec app yarn migration:run
+docker compose -f docker-compose.equipo.yaml exec app yarn migration:run:prod
 ```
+
+> Ojo con el sufijo `:prod`. El `yarn migration:run` de siempre compila las
+> migraciones antes de aplicarlas, y para eso necesita TypeScript, que es una
+> dependencia de desarrollo y no viaja en la imagen de producción. En la imagen
+> ya vienen compiladas, así que `migration:run:prod` solo las aplica.
 
 ### 6. Dar de alta a las cinco personas
 
